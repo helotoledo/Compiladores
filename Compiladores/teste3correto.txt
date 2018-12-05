@@ -1,0 +1,19 @@
+start
+int pontuacao, pontuacaoMaxima, pontuacaoMinima;
+string disponibilidade;
+  disponibilidade = "Sim";
+  pontuacaoMaxima = 100;
+  pontuacaoMinima = 50;
+  { Entrada de dados
+     Verifica aprovacao de candidatos }
+do
+print("Pontuacao Candidato: ");
+scan(pontuacao);
+print("Disponibilidade Candidato: ");
+scan(disponibilidade);
+if ((pontuacao > pontuacaoMinima)) then print("Candidato aprovado");
+     else
+        print("Candidato reprovado");
+     end
+  while (pontuacao >= 0)end
+exit

@@ -1,0 +1,13 @@
+start
+   int fatorial;
+   int f;
+f=5;
+   print("O fatorial de ");
+   print(f);
+   print("Ola");
+   do
+      fatorial = f * (f-1);
+   while(f-1 > 0) end
+   print("e: ");
+   print(fatorial);
+ exit

@@ -1,0 +1,5 @@
+start
+   int a, b;
+   a = 5;
+   b = a * 5;
+exit
