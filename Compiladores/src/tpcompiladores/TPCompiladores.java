@@ -8,7 +8,7 @@ public class TPCompiladores {
         try {
 //            Lexer l = new Lexer("teste3correto.txt");
 //            l.runLexer();
-            Sintax sin = new Sintax("teste2.txt");
+            Sintax sin = new Sintax("teste1.txt");
         } catch (IOException e) {
 
         }

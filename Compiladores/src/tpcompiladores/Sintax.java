@@ -7,7 +7,7 @@ public class Sintax {
     public Lexer lex;
     public Token tok;
     public Token tokAnterior;
-
+    public boolean condition = false;
     private static final boolean debug = false;
 
     public Sintax() {
@@ -27,8 +27,12 @@ public class Sintax {
     }
 
     private void advance() throws Exception {
+
         tokAnterior = tok;
         tok = lex.scan();
+        if(tok.tag == Tag.AND || tok.tag == Tag.OR){
+           condition = true;
+        }
         if (tok.tag == Tag.COMMENT) {
             System.out.println("comment();");
             eat(Tag.COMMENT, false);
@@ -257,11 +261,17 @@ public class Sintax {
             System.out.println("term();");
         }
         tipoSemantico tipoFactor = factor_a();
-        if (tok.tag == Tag.MULT || tok.tag == Tag.DIV || tok.tag == Tag.AND) {
+        if (tok.tag == Tag.MULT || tok.tag == Tag.DIV) {
             mulop();
             tipoSemantico tipoTerm = term();
             if(tipoTerm != tipoSemantico.NULL && tipoTerm != tipoFactor){
-                throw new Exception("Excecao Semantica: Tipo do factor (" + tipoFactor + " - " + tok.toString()+ ") diferente do tipo do termo (" + tipoTerm + ") na linha " + Lexer.line);
+                throw new Exception("Excecao Semantica: Tipo do factor (" + tipoFactor + " - " + tok.toString()+ ") diferente do tipo do termo (" + tipoTerm + ") na linha " + Lexer.line + "  "+tok.tag+"  " + tokAnterior.tag);
+            }
+        }else if(tok.tag == Tag.AND){
+            mulop();
+            tipoSemantico tipoTerm = term();
+            if(tipoTerm != tipoSemantico.NULL && tipoTerm != tipoFactor && condition == false){
+                throw new Exception("Excecao Semantica: Tipo do factor (" + tipoFactor + " - " + tok.toString()+ ") diferente do tipo do termo (" + tipoTerm + ") na linha " + Lexer.line + "  "+tok.tag+"  " + tokAnterior.tag);
             }
         }
         return tipoFactor;
@@ -273,10 +283,17 @@ public class Sintax {
             System.out.println("simple_expr();");
         }
         tipoSemantico tipoTerm = term();
-        if (tok.tag == Tag.ADD || tok.tag == Tag.SUB || tok.tag == Tag.OR) {
+        if (tok.tag == Tag.ADD || tok.tag == Tag.SUB) {
             addop();
             tipoSemantico tipoExpr = simple_expr();
             if(tipoExpr != tipoSemantico.NULL && tipoExpr != tipoTerm){
+                throw new Exception("Excecao Semantica: Tipo do termo (" + tipoTerm + ") diferente do tipo da expressao (" + tipoExpr + ") na linha " + Lexer.line);
+            }
+        }
+        else if (tok.tag == Tag.OR) {
+            addop();
+            tipoSemantico tipoExpr = simple_expr();
+            if(tipoExpr != tipoSemantico.NULL && tipoExpr != tipoTerm && condition == false){
                 throw new Exception("Excecao Semantica: Tipo do termo (" + tipoTerm + ") diferente do tipo da expressao (" + tipoExpr + ") na linha " + Lexer.line);
             }
         }
@@ -372,6 +389,7 @@ public class Sintax {
         eat(Tag.IF, false);
         condition();
         eat(Tag.THEN, false);
+        condition = false;
         stmt_list();
         if (tok.tag == Tag.ELSE) {
             eat(Tag.ELSE, false);
